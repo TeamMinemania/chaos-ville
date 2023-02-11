@@ -1,0 +1,24 @@
+{
+  "name": "aiville",
+  "version": "0.0.1",
+  "description": "An open world game using chatGPT3 and DallE",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \\\"Error: no  specified\\\" && exit 1",
+    "start-text": "node src/text.js",
+    "start-image": "node src/image.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schematical/aiville.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/schematical/aiville/issues"
+  },
+  "homepage": "https://github.com/schematical/aiville#readme",
+  "dependencies": {
+    "openai": "^3.1.0"
+  }
+}

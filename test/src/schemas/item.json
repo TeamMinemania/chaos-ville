@@ -1,0 +1,34 @@
+[
+  {
+    "id": "dirty_shorts",
+    "name": "Dirty Shorts",
+    "description": "Your dirty shorts",
+    "interactions": [
+      {
+        "command": "Pick Up",
+        "actions": [
+          {
+            "action": "INV_ADD",
+            "item_id": "dirty_shorts",
+            "qty": 1
+          },
+          {
+            "action": "REMOVE_FROM_ROOM",
+            "item_id": "dirty_shorts"
+          }
+        ],
+        "response": "Your mother would be so proud"
+      },
+      {
+        "command": "Kick Under Bed",
+        "actions": [
+          {
+            "action": "REMOVE_FROM_ROOM",
+            "item_id": "dirty_shorts"
+          }
+        ],
+        "response": "You nasty"
+      }
+    ]
+  }
+]

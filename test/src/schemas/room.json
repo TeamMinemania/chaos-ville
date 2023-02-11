@@ -1,0 +1,11 @@
+[
+  {
+    "id": "bedroom",
+    "name": "{PLAYER_NAME}'s Bedroom",
+    "items": [
+      {
+        "id": "dirty_shorts"
+      }
+    ]
+  }
+]
