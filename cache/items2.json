@@ -1,0 +1,52 @@
+[
+  {
+    "id": "sunscreen",
+    "name": "Sunscreen",
+    "description": "A bottle of waterproof sunscreen.",
+    "interactions": [
+      {
+        "command": "Apply",
+        "actions": [],
+        "response": "You liberally coat yourself in the sunscreen."
+      },
+      {
+        "command": "Smell",
+        "actions": [],
+        "response": "It smells like coconuts."
+      },
+      {
+        "command": "Throw Away",
+        "actions": [
+          {
+            "action": "REMOVE_FROM_ROOM",
+            "item_id": "sunscreen"
+          }
+        ],
+        "response": "You throw away the sunscreen."
+      }
+    ]
+  },
+  {
+    "id": "passport",
+    "name": "Passport",
+    "description": "A small travel passport.",
+    "interactions": [
+      {
+        "command": "Open",
+        "actions": [],
+        "response": "You flip open your passport and take a look inside."
+      },
+      {
+        "command": "Read",
+        "actions": [],
+        "response": " Your name is written in the passport along with your country of origin."
+
+      },
+      {
+        "command": "Put Away",
+        "actions": [],
+        "response": "You close the passport and store it in a safe pocket."
+      }
+    ]
+  }
+]

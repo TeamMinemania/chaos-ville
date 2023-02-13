@@ -5,10 +5,10 @@ const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
-const schema = fs.readFileSync('../cache/items.json');
+const schema = fs.readFileSync('../cache/items2.json');
 const schemaObj = JSON.parse(schema);
 let promptItems = schemaObj.map((o) => o.name);
-const prompt = `A dirty bedroom  in the style of Adventure Game Interpreter pixel art with the following objects in it ${promptItems.join(', ')}`
+const prompt = `A photo realistic backpackers hostel with the following objects in it ${promptItems.join(', ')} but you just took a bunch of L.S.D. and mushrooms`
 
 openai.createImage({
     prompt: prompt,

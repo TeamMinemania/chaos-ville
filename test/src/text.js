@@ -11,12 +11,12 @@ const prompt = `If I gave you template JSON like:
 \`\`\`
 ${schema}
 \`\`\`
-Could you generate 3 more items you would find in a teenagers bedroom with 3 interactions a piece?{DONE}`;
+Could you generate 3 more items you would find in a backpackers hostel with 3 interactions a piece?{DONE}`;
 
 openai.createCompletion({
     model: "text-davinci-003",
     prompt: prompt,
-    temperature: .5,
+    temperature: 1,
     max_tokens: 1000,
     top_p: 1.0,
     frequency_penalty: 0.2,

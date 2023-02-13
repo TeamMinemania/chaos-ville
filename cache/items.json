@@ -1,0 +1,175 @@
+
+[
+  {
+    "id": "dirty_socks",
+    "name": "Dirty Socks",
+    "description": "Your dirty socks",
+    "interactions": [
+      {
+        "command": "Pick Up",
+        "actions": [
+          {
+            "action": "INV_ADD",
+            "item_id": "dirty_socks",
+            "qty": 1
+          },
+          {
+            "action": "REMOVE_FROM_ROOM",
+            "item_id": "dirty_socks"
+          }
+        ],
+        "response": "Your mother would be so proud"
+      },
+      {
+        "command": "Kick Under Bed",
+        "actions": [
+          {
+            "action": "REMOVE_FROM_ROOM",
+            "item_id": "dirty_socks"
+          }
+        ],
+        "response": "You nasty"
+      },
+      {
+        "command": "Throw Out Window",
+        "actions": [
+          {
+            "action": "REMOVE_FROM_ROOM",
+            "item_id": "dirty_socks"
+          }
+        ],
+        "response": "That's one way to get rid of them"
+      }
+
+    ]
+
+  },
+
+  {
+
+    "id": "dirty_shirt",
+
+    "name": "Dirty Shirt",
+
+    "description": "Your dirty shirt",
+
+    "interactions": [
+      {
+        "command": "Pick Up",
+        "actions": [
+          {
+            "action": "INV_ADD",
+            "item_id": "dirty_shirt",
+            "qty": 1
+          },
+          {
+            "action": "REMOVE_FROM_ROOM",
+            "item_id": "dirty_shirt"
+          }
+        ]
+      }
+
+    ]
+  },
+  {
+    "id": "game_console",
+    "name": "Game Console",
+    "description": "Your favorite game console",
+    "interactions": [
+      {
+        "command": "Turn On",
+        "actions": [
+          {
+            "action": "CHANGE_ROOM_STATE",
+            "room_state": "console_on"
+          }
+        ],
+        "response": "The lights come on and the console is ready to play"
+      },
+      {
+        "command": "Turn Off",
+        "actions": [
+          {
+            "action": "CHANGE_ROOM_STATE",
+            "room_state": "console_off"
+          }
+        ],
+        "response": "The lights go off and the console is no longer ready to play"
+      },
+      {
+        "command": "Play",
+        "actions": [
+          {
+            "action": "CHANGE_ROOM_STATE",
+            "room_state": "console_playing"
+          }
+        ],
+        "response": "You start playing your favorite game"
+      }
+    ]
+  },
+  {
+    "id": "phone",
+    "name": "Phone",
+    "description": "Your trusty phone",
+    "interactions": [
+      {
+        "command": "Turn On",
+        "actions": [
+          {
+            "action": "CHANGE_ROOM_STATE",
+            "room_state": "phone_on"
+          }
+        ],
+        "response": "The phone lights up and is ready to use"
+      },
+      {
+        "command": "Turn Off",
+        "actions": [
+          {
+            "action": "CHANGE_ROOM_STATE",
+            "room_state": "phone_off"
+          }
+        ],
+        "response":"The phone shuts off and is no longer ready to use"
+      },
+      {
+        "command":"Call Mom",
+        "actions":[
+          {
+            "action":"CHANGE_ROOM_STATE",
+            "room_state":"mom_called"
+          }
+        ],
+        "response":"You call your mom and she answers the phone with a warm hello"
+      }
+    ]
+  },
+  {
+    "id": "backpack",
+    "name": "Backpack",
+    "description": "Your trusty backpack for school",
+    "interactions": [
+      {
+        "command": "Open",
+        "actions": [
+          {
+            "action": "CHANGE_ROOM_STATE",
+            "room_state": "backpack_open"
+          }
+        ],
+        "response": "You open the backpack and see all your school supplies inside."
+      },
+      {
+        "command": "Close",
+        "actions": [
+          {
+            "action": "CHANGE_ROOM_STATE",
+            "room_state": "backpack_closed"
+          }
+        ],
+        "response": "You close the backpack and it's ready for school tomorrow."
+      }
+    ]
+  }
+]
