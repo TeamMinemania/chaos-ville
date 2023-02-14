@@ -5,8 +5,16 @@ interface  iProps{
 
 }
 interface  iState{
+  currentModal: iModalOptions
+}
+interface iModalOptions {
   modalText?:string;
   modalTitle?: string;
+  fields:  { [key: string]: iPrompt; };
+}
+interface iPrompt {
+  name: string;
+  value?: string;
 }
 class App extends React.Component<iProps, iState> {
   hasRendered: boolean;
@@ -20,9 +28,23 @@ class App extends React.Component<iProps, iState> {
     this.mainCanvas = React.createRef();
     this.hiddenCanvas = React.createRef();
     this.modal = React.createRef();
+    this.handleChange = this.handleChange.bind(this);
   }
   componentDidMount() {
-
+    this.showModal({
+      modalText: 'Describe your charecter',
+      modalTitle: 'Who are you?',
+      fields: {
+        test1: {
+          name:"Banans",
+          value: ""
+        },
+        test2: {
+          name:"Cheese",
+          value: ""
+        }
+      }
+    })
     if (this.hasRendered) {
       return;
     }
@@ -62,12 +84,17 @@ class App extends React.Component<iProps, iState> {
     };
     img.src = 'test.png';
   }
-  showModal(modalTitle, modalText) {
+  showModal(options: iModalOptions) {
     (window as any).$(this.modal.current).modal('show');
     this.setState({
-      modalTitle,
-      modalText
-    })
+      currentModal: options
+    });
+  }
+  handleChange(event) {
+    const state = this.state;
+    state.currentModal.fields[event.target.id].value = event.target.value
+    this.setState(state);
+    console.log("handleChange", state);
   }
   render() {
     return (
@@ -124,17 +151,34 @@ class App extends React.Component<iProps, iState> {
               <div className="modal-dialog" role="document">
                 <div className="modal-content">
                   <div className="modal-header">
-                    <div className="modal-title">{this.state && this.state.modalTitle}</div>
+                    <div className="modal-title">{this.state && this.state.currentModal.modalTitle}</div>
                     <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">x</span>
                     </button>
                   </div>
                   <div className="modal-body">
-                    <p>{this.state && this.state.modalText}</p>
+                    <p>{this.state && this.state.currentModal.modalText}</p>
+                    {
+                      this.state && this.state.currentModal && this.state.currentModal.fields && Object.keys(this.state.currentModal.fields).map((key, i) => {
+                        return <div className="form-group">
+                          <label className="col-form-label col-form-label-lg" htmlFor={ key }>
+                            {this.state.currentModal.fields[key].name}
+                          </label>
+                          <input className="form-control form-control-sm" type="text"
+                                 placeholder={this.state.currentModal.fields[key].name}
+                                 aria-label={this.state.currentModal.fields[key].name}
+                                 id={ key } onChange={this.handleChange}
+                                 value={this.state.currentModal.fields[key].value}
+                          />
+                        </div>
+                      })
+                    }
                   </div>
                   <div className="modal-footer">
                     {/*<button type="button" className="btn btn-primary">Save changes</button>*/}
-                    <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.onNextClick}>
+                      Next
+                    </button>
                   </div>
                 </div>
               </div>
@@ -148,7 +192,7 @@ class App extends React.Component<iProps, iState> {
               <div className="collapse navbar-collapse" id="navbarCollapse">
                 <form className="form-inline mt-2 mt-md-0" action="#">
                   <input className="form-control mr-sm-2 form-control-lg" type="text" placeholder="Search" aria-label="Search"/>
-                  <button className="btn btn-outline-success my-2 my-sm-0" type="submit" data-toggle="modal" data-target="#myModal">Search</button>
+                  <button className="btn btn-outline-success my-2 my-sm-0" type="submit" data-toggle="modal" data-target="#myModal">Try Action</button>
                 </form>
 
 
@@ -161,6 +205,10 @@ class App extends React.Component<iProps, iState> {
         </div>
 
     );
+  }
+
+  private onNextClick(e) {
+    console.log('onNextClick', e);
   }
 }
 export default App;

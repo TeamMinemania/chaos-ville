@@ -8,7 +8,7 @@ import {Types} from "mongoose";
 import {Field, ID, ObjectType} from "type-graphql";
 import DataLoader from "dataloader";
 import _ from "lodash";
-import {CropSpecies} from "@functions/gql/crop-species/CropSpecies.entity";
+import {CropSpecies} from "@functions/gql/game/Game";
 export interface iBaseService<EntityT extends BaseEntity> {
     find(query: FilterQuery<EntityT>);
     createOne(input: Partial<EntityT>): Promise<EntityT>;

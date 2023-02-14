@@ -2,7 +2,7 @@ import config from "config";
 import {connect} from "mongoose";
 import {buildSchema, emitSchemaDefinitionFile} from "type-graphql";
 import {UserResolver} from "./user/User.resolver";
-import {CropSpeciesResolver} from "./crop-species/CropSpecies.resolver";
+import {GameResolver} from "./game/Game.resolver";
 import {Container} from "typedi";
 import {GeoLocationResolver} from "./geo-location/GeoLocation.resolver";
 import path from "path";
@@ -15,7 +15,7 @@ export const getApolloConfig = async () => {
         {}
     );
     const schema = await buildSchema({
-        resolvers: [UserResolver, CropSpeciesResolver, GeoLocationResolver],
+        resolvers: [UserResolver, GameResolver, GeoLocationResolver],
         container: Container,
         emitSchemaFile: debug ? path.resolve(__dirname, "schema.gql") : false, // debug
     });

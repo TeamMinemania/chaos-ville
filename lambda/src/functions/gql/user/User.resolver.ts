@@ -5,7 +5,7 @@ import {Inject, Service} from "typedi";
 import {UserService} from "./User.service";
 import {User, UserCreateInput, UserFilterInput, UserSignupPartialInput, UserUpdateInput} from "./User.entity";
 import {BaseResolver} from "../../../libs/Base.resolver";
-import {CropSpecies, CropSpeciesFilterInput} from "@functions/gql/crop-species/CropSpecies.entity";
+import {CropSpecies, CropSpeciesFilterInput} from "@functions/gql/game/Game";
 
 
 @Resolver(() => User)
