@@ -4,7 +4,7 @@ import {BaseEntity} from "../../../libs/Base.entity";
 import {getModelForClass, prop, Ref} from '@typegoose/typegoose';
 import {Container} from "typedi";
 import {FilterQuery, Schema} from "mongoose";
-import {GeoLocation} from "../geo-location/GeoLocation.entity";
+import {Game} from "@functions/gql/game/Game";
 // 1. Create an interface representing a document in MongoDB.
 @ObjectType()
 export class User extends BaseEntity {
@@ -20,9 +20,9 @@ export class User extends BaseEntity {
     @Field(() => String)
     lastName: string;
 
-    @prop({ type: () => GeoLocation })
-    @Field(() => GeoLocation)
-    defaultGeoLocation: Ref<GeoLocation>;
+    @prop({ type: () => Game })
+    @Field(() => Game)
+    lastGame: Ref<Game>;
 
 }
 

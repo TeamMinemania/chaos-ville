@@ -1,20 +1,20 @@
 import { gql } from "@apollo/client";
 import client from "./Apollo";
 
-import { listCropSpecies } from "./graphql";
+import { createGame } from "./graphql";
 
 // eslint-disable-next-line import/prefer-default-export
 export class GameService {
-    public static listCropSpecies(query: any) {
+    public static createGame(query: any) {
         return client
             .query({
-                query: gql(listCropSpecies),
+                query: gql(createGame),
                 variables: {
                     input: query,
                 },
             })
             .then((response) => {
-                return response?.data?.listCropSpecies;
+                return response?.data?.createGame;
             });
     }
 }

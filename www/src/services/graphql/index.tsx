@@ -1,18 +1,9 @@
-const listCropSpecies = `
-    query listCropSpecies($input: CropSpeciesFilterInput!){
-  listCropSpecies(input:$input) {
+const createGame = `
+    mutation createGame($createGameInput: GameCreateInput!) {
+  createGame(input: $createGameInput) {
     _id
-    importId
-    name
-    lowTemp
-    highTemp
-    sewingMethods
-    otherNames
-    harvestDayMin
-    harvestDayMax
-    maxSpacingInCM
-    minSpacingInCM
   }
 }
+
 `;
-export { listCropSpecies };
+export { createGame };

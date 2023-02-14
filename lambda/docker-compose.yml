@@ -2,10 +2,10 @@ version: '3'
 
 services:
   db:
-    container_name: gardenplanner-lambda
+    container_name: chaos-ville-lambda
     image: mongo
     environment:
-      MONGO_INITDB_ROOT_DATABASE: gardenplanner
+      MONGO_INITDB_ROOT_DATABASE: chaos-ville
       MONGO_INITDB_ROOT_USERNAME: hello
       MONGO_INITDB_ROOT_PASSWORD: world
     ports:

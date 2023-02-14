@@ -4,7 +4,6 @@ import {buildSchema, emitSchemaDefinitionFile} from "type-graphql";
 import {UserResolver} from "./user/User.resolver";
 import {GameResolver} from "./game/Game.resolver";
 import {Container} from "typedi";
-import {GeoLocationResolver} from "./geo-location/GeoLocation.resolver";
 import path from "path";
 
 export const getApolloConfig = async () => {
@@ -15,9 +14,12 @@ export const getApolloConfig = async () => {
         {}
     );
     const schema = await buildSchema({
-        resolvers: [UserResolver, GameResolver, GeoLocationResolver],
+        resolvers: [UserResolver, GameResolver],
         container: Container,
         emitSchemaFile: debug ? path.resolve(__dirname, "schema.gql") : false, // debug
+        validate: {
+            forbidUnknownValues: false
+        }
     });
     if (debug) {
         await emitSchemaDefinitionFile('/home/user1a/WebstormProjects/gardenplanner-lambda/schema.gql', schema);

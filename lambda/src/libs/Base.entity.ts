@@ -2,7 +2,6 @@ import 'reflect-metadata';
 // import {prop } from "@typegoose/typegoose";
 import {Field, ID, ObjectType} from "type-graphql";
 import {Schema } from 'mongoose';
-import {CropSpecies} from "@functions/gql/game/Game";
 
 @ObjectType()
 class BaseEntity {
