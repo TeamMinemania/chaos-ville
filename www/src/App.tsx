@@ -32,16 +32,24 @@ class App extends React.Component<iProps, iState> {
   }
   componentDidMount() {
     this.showModal({
-      modalText: 'Describe your charecter',
-      modalTitle: 'Who are you?',
+      modalText: 'Choose your adventure',
+      modalTitle: 'Story Builder',
       fields: {
-        test1: {
-          name:"Banans",
+        location: {
+          name:"Where does this story start off?",
           value: ""
         },
-        test2: {
-          name:"Cheese",
+        mission: {
+          name:"What is the main mission of the protagonists in this story?",
           value: ""
+        },
+        style: {
+          name:"What styles would you like the images to be in?",
+          value: "Adventure Game Interpreter (AGI) pixel art as a side view of the scene"
+        },
+        writer: {
+          name:"Who is the author of this story?",
+          value: "Al Lowe"
         }
       }
     })
@@ -95,6 +103,9 @@ class App extends React.Component<iProps, iState> {
     state.currentModal.fields[event.target.id].value = event.target.value
     this.setState(state);
     console.log("handleChange", state);
+  }
+  private onNextClick(e) {
+    console.log('onNextClick', e);
   }
   render() {
     return (
@@ -207,8 +218,6 @@ class App extends React.Component<iProps, iState> {
     );
   }
 
-  private onNextClick(e) {
-    console.log('onNextClick', e);
-  }
+
 }
 export default App;

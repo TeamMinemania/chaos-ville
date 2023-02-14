@@ -1,0 +1,22 @@
+{
+  "name": "chaos-ville-lambda",
+  "version": "0.0.1",
+  "description": "",
+  "main": "webpack.config.js",
+  "dependencies": {
+    "dataloader": "^2.2.2",
+    "graphql-type-json": "^0.3.2",
+    "lodash": "^4.17.21",
+    "mongoose": "^6.9.1",
+    "pluralize": "^8.0.0",
+    "tslib": "^2.5.0",
+    "type-graphql": "^1.1.1",
+    "typedi": "^0.10.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

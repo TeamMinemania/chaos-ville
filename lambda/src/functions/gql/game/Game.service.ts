@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { Container, Inject, Service } from "typedi";
-import * as fs from "fs";
+
 import { BaseService } from "../../../libs/Base.service";
 import pluralize from "pluralize";
 import _ from "lodash";

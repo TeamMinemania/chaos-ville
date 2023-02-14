@@ -5,7 +5,6 @@ import {Arg, Ctx, ID, Mutation, Query, Resolver} from "type-graphql";
 import {Type} from "./util";
 import {FilterQuery} from "mongoose";
 import DataLoader from "dataloader";
-import {CropSpecies} from "@functions/gql/game/Game";
 import _ from "lodash";
 
 export interface iBaseResolver<EntityT extends BaseEntity, ServiceT extends iBaseService<EntityT>> {

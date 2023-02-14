@@ -8,66 +8,15 @@ import { GraphQLJSONObject } from "graphql-type-json";
 // 1. Create an interface representing a document in MongoDB.
 @ObjectType()
 export class Game extends BaseEntity {
-  @prop({ type: () => String })
-  @Field(() => String)
-  importId?: string;
-
-  @prop({ type: () => String })
-  @Field(() => String)
-  name: string;
-
-  @prop({ type: () => String })
-  @Field(() => String)
-  tmp: string;
-
-
-  @prop({ type: () => [String] })
-  @Field(() => [String], { nullable: true })
-  otherNames?: string[];
-
-  @prop({ type: () => [String] })
-  @Field(() => [String], { nullable: true })
-  sewingMethods?: string[];
-
-  @prop({ type: () => Number })
-  @Field(() => Number, { nullable: true })
-  lowTemp?: number;
-
-  @prop({ type: () => Number })
-  @Field(() => Number, { nullable: true })
-  highTemp?: number;
-
-  @prop({ type: () => Number })
-  @Field(() => Number, { nullable: true })
-  minSpacingInCM?: number;
-
-  @prop({ type: () => Number })
-  @Field(() => Number, { nullable: true })
-  maxSpacingInCM?: number;
-
-  @prop({ type: () => Number })
-  @Field(() => Number, { nullable: true })
-  harvestDayMin?: number;
-
-  @prop({ type: () => Number })
-  @Field(() => Number, { nullable: true })
-  harvestDayMax?: number;
-
-  @prop({ type: () => Number })
-  @Field(() => Number, { nullable: true })
-  fdcId?: number;
-
-  @prop({ type: () => [Number] })
-  @Field(() => [Number], { nullable: true })
-  fdcIds?: [number];
 
   @Field(() => GraphQLJSONObject, { nullable: true })
   @prop({ type: () => Object })
-  public attributes?: any;
+  public prompts?: any;
 
   @Field(() => GraphQLJSONObject, { nullable: true })
   @prop({ type: () => Object })
-  public fdc?: any;
+  public history?: any;
+
 }
 
 // 3. Create a Model.
@@ -76,8 +25,8 @@ Container.set("GameModel", GameModel);
 
 @InputType()
 export class GameCreateInput implements Partial<Game> {
-  @Field(() => String)
-  name: string;
+  @Field(() => GraphQLJSONObject, { nullable: true })
+  public prompts?: any;
 }
 @InputType()
 export class GameUpdateInput
