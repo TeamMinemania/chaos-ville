@@ -17,6 +17,10 @@ export class Game extends BaseEntity {
   @prop({ type: () => Object })
   public history?: any;
 
+  @Field(() => GraphQLJSONObject, { nullable: true })
+  @prop({ type: () => Object })
+  public scenes?: any;
+
 }
 
 // 3. Create a Model.
