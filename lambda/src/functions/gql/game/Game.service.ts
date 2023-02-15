@@ -48,12 +48,12 @@ export class GameService extends BaseService(Game) {
       \`\`\`
       In less than 1000 tokens please generate valid JSON for a room with 3 items that have 2 interactions a piece that you would find in a ${game.prompts.location}?
     `;
-
-    const completion = await this.openai.createCompletion({
+console.log("PROMPT: ", prompt);
+/*    const completion = await this.openai.createCompletion({
       model: "text-davinci-003",
       prompt: prompt,
       temperature: .5,
-      max_tokens: 1000,
+      max_tokens: 2000,
       top_p: 1.0,
       frequency_penalty: 0.2,
       presence_penalty: 0.0,
@@ -61,7 +61,7 @@ export class GameService extends BaseService(Game) {
     });
     console.log("completion.data.choices[0].text: ", completion.data.choices[0].text);
     game.scenes = [JSON.parse(completion.data.choices[0].text)];
-    await game.save();
+    await game.save();*/
 
     return game;
   }
