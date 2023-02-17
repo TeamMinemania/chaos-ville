@@ -1,9 +1,9 @@
 import {Container} from "typedi";
 import {GameService} from "./Game.service";
-import {CropSpecies, CropSpeciesCreateInput, CropSpeciesUpdateInput} from "./Game";
+import {Game, GameCreateInput, GameUpdateInput} from "./Game";
 import {Field} from "type-graphql/dist/decorators/Field";
 
-describe('CropSpeciesService', () => {
+describe('GameService', () => {
     let service: GameService;
     beforeEach(() => {
         // service = Container.get('GameService');
@@ -15,9 +15,9 @@ describe('CropSpeciesService', () => {
 
 
         it('should list users', async () => {
-            const entity = new CropSpeciesUpdateInput();
+            const entity = new GameUpdateInput();
             const metadataKey = 'typegoose:properties'; // Symbol("Field");
-            const metaDataResults  = Reflect.getMetadata(metadataKey, CropSpeciesUpdateInput);
+            const metaDataResults  = Reflect.getMetadata(metadataKey, GameUpdateInput);
 
             metaDataResults.forEach((r) => {
 

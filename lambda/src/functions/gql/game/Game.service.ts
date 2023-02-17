@@ -5,7 +5,7 @@ import { BaseService } from "../../../libs/Base.service";
 import pluralize from "pluralize";
 import _ from "lodash";
 import DataLoader from "dataloader";
-import {Game} from "@functions/gql/game/Game";
+import {Game} from "./Game";
 import {UserInputError} from "apollo-server";
 import {HydratedDocument} from "mongoose";
 

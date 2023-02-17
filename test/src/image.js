@@ -8,7 +8,7 @@ const openai = new OpenAIApi(configuration);
 const schema = fs.readFileSync('../cache/items2.json');
 const schemaObj = JSON.parse(schema);
 let promptItems = schemaObj.map((o) => o.name);
-const prompt = `A photo realistic backpackers hostel with the following objects in it ${promptItems.join(', ')} but you just took a bunch of L.S.D. and mushrooms`
+const prompt = `A photo realistic backpackers hostel with the following objects in it ${promptItems.join(', ')}`
 
 openai.createImage({
     prompt: prompt,
