@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { Container, Inject, Service } from "typedi";
+import path from 'path';
 
 import { BaseService } from "../../../libs/Base.service";
 import pluralize from "pluralize";
@@ -39,8 +40,8 @@ export class GameService extends BaseService(Game) {
     }
     const game = await super.createOne(input) as HydratedDocument<Game>;
 
-
-    const schema = fs.readFileSync('C:\\Users\\mlea\\WebstormProjects\\aiville\\test\\src\\schemas\\scene.json');
+    const loc = path.resolve(__dirname, 'schemas/scene.json');
+    const schema = fs.readFileSync(loc);
     const prompt = `
       If I gave you template JSON like:
       \`\`\`

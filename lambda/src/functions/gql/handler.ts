@@ -10,11 +10,10 @@ export const main = async (
     // callback: APIGatewayProxyCallback
 ): Promise<APIGatewayProxyHandler> => {
   if (!handeler) {
-
     const apolloConfig = await getApolloConfig();
     const server = new ApolloServer(apolloConfig);
     handeler = server.createHandler();
   }
-  event.path = '/graphql';
+  event.path = '/chaosville';
   return handeler(event, context);
 };

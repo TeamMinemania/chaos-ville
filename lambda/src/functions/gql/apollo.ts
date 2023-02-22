@@ -1,5 +1,5 @@
 import config from "config";
-import {connect} from "mongoose";
+import {connect, set} from "mongoose";
 import {buildSchema, emitSchemaDefinitionFile} from "type-graphql";
 import {UserResolver} from "./user/User.resolver";
 import {GameResolver} from "./game/Game.resolver";
@@ -9,10 +9,12 @@ import path from "path";
 export const getApolloConfig = async () => {
     const debug = process.env.NODE_ENV === 'dev' ? true : false;
     const url = config.get<string>('db.host');
+    set("strictQuery", false);
     await connect(
         url,
         {}
     );
+    console.log('connected!');
     const schema = await buildSchema({
         resolvers: [UserResolver, GameResolver],
         container: Container,

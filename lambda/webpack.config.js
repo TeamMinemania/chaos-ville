@@ -1,6 +1,8 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
+const CopyPlugin = require("copy-webpack-plugin");
+
 module.exports = {
     context: __dirname,
     optimization: {
@@ -33,4 +35,14 @@ module.exports = {
         filename: '[name].js',
     },
     externals: [nodeExternals()],
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: "config", to: "config" },
+                { from: "src/functions/gql/schemas", to: "src/functions/gql/schemas" },
+            ],
+        }),
+
+    ],
+
 };
