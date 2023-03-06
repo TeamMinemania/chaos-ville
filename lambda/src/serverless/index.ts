@@ -1,6 +1,7 @@
 import {LambdaSecurityGroup} from "./resources/LambdaSecurityGroup";
 const region = `us-east-1`;
 import { AWS } from '@serverless/typescript';
+import discord from '@functions/discord';
 import gql from '@functions/gql';
 const ApiGatewayMethodPropertyName = 'ApiGatewayMethodChaosvilleAny';
 const serverlessConfiguration: AWS = {
@@ -15,13 +16,17 @@ const serverlessConfiguration: AWS = {
         },
     },
 
-    plugins: ['serverless-webpack'],
+    plugins: [
+
+        'serverless-webpack',
+        'serverless-offline',
+    ],
     provider: {
         name: 'aws',
         runtime: 'nodejs16.x',
         profile: 'schematical',
         region,
-        lambdaHashingVersion: '20201221' as any,
+        lambdaHashingVersion: '20200924' as any,
         apiGateway: {
             // @ts-ignore
             restApiId: { 'Fn::ImportValue': 'schematical-platform-v1-APIGateway' },
@@ -235,6 +240,7 @@ const serverlessConfiguration: AWS = {
     },
     functions: {
         gql,
+        discord,
         /*kinesisWorker: {
             name: `\${self:service,'somethingiswrong'}-worker-v1-\${opt:stage, 'test'}`,
             handler: 'src/kinesisWorker.kinesisHandler',

@@ -20,7 +20,7 @@ import { GameService } from "./Game.service";
 
 // import DataLoader from "dataloader";
 import { HydratedDocument } from "mongoose";
-import { BaseResolver } from "../../../libs/Base.resolver";
+import { BaseResolver } from "../Base.resolver";
 
 import { GraphQLJSONObject } from "graphql-type-json";
 @Service()

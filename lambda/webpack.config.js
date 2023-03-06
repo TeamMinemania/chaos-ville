@@ -39,7 +39,7 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 { from: "config", to: "config" },
-                { from: "src/functions/gql/schemas", to: "src/functions/gql/schemas" },
+                // { from: "src/functions/gql/schemas", to: "src/functions/gql/schemas" },
             ],
         }),
 

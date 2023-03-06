@@ -4,7 +4,7 @@ import {Arg, Ctx, Mutation, Query, Resolver} from "type-graphql";
 import {Inject, Service} from "typedi";
 import {UserService} from "./User.service";
 import {User, UserCreateInput, UserFilterInput, UserSignupPartialInput, UserUpdateInput} from "./User.entity";
-import {BaseResolver} from "../../../libs/Base.resolver";
+import {BaseResolver} from "../Base.resolver";
 
 
 @Resolver(() => User)

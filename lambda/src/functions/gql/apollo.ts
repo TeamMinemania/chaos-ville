@@ -1,8 +1,8 @@
 import config from "config";
 import {connect, set} from "mongoose";
 import {buildSchema, emitSchemaDefinitionFile} from "type-graphql";
-import {UserResolver} from "./user/User.resolver";
-import {GameResolver} from "./game/Game.resolver";
+import {UserResolver} from "../../libs/user/User.resolver";
+import {GameResolver} from "../../libs/game/Game.resolver";
 import {Container} from "typedi";
 import path from "path";
 

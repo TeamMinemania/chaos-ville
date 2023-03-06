@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { Container, Inject, Service } from "typedi";
 import path from 'path';
 
-import { BaseService } from "../../../libs/Base.service";
+import { BaseService } from "../Base.service";
 import pluralize from "pluralize";
 import _ from "lodash";
 import DataLoader from "dataloader";
