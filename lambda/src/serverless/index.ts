@@ -78,6 +78,37 @@ const serverlessConfiguration: AWS = {
                     },
                 },
             },
+            DiscordLambdaFunction: {
+                Properties: {
+                    TracingConfig: {
+                        Mode : "Active"
+                    },
+                    VpcConfig: {
+                        SecurityGroupIds: [
+                            {
+                                Ref: 'LambdaSecurityGroup',
+                            },
+                        ],
+                        SubnetIds: [
+                            {
+                                "Fn::ImportValue": {
+                                    "Fn::Sub": `\${AWS::Region}-\${opt:stage, 'test'}-PrivateSubnetA`
+                                }
+                            },
+                            {
+                                "Fn::ImportValue": {
+                                    "Fn::Sub": `\${AWS::Region}-\${opt:stage, 'test'}-PrivateSubnetB`
+                                }
+                            },
+                            {
+                                "Fn::ImportValue": {
+                                    "Fn::Sub": `\${AWS::Region}-\${opt:stage, 'test'}-PrivateSubnetC`
+                                }
+                            }
+                        ]
+                    },
+                },
+            },
             // @ts-ignore
             IamRoleLambdaExecution: {
                 Properties: {
@@ -106,34 +137,54 @@ const serverlessConfiguration: AWS = {
                                         "Effect": "Allow",
                                         "Action": [
                                             "logs:CreateLogStream",
-                                            "logs:CreateLogGroup"
+                                            "logs:CreateLogGroup",
+                                            "logs:PutLogEvents"
                                         ],
                                         "Resource": [
                                             {
-                                                "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-\${opt:stage, 'test'}-gql:*`
+                                                "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-\${opt:stage, 'test'}-*:*`
                                             },
                                             {
-                                                "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-worker-\${opt:stage, 'test'}-gql:*`
+                                                "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-worker-\${opt:stage, 'test'}-*:*`
                                             }
                                         ]
                                     },
                                     {
                                         "Effect": "Allow",
                                         "Action": [
-                                            "logs:PutLogEvents"
+                                            "batch:SubmitJob"
+                                        ],
+                                        "Resource": [
+                                            // "arn:aws:batch:us-east-1:368590945923:job-definition/dreambooth-worker-v1-prod-us-east-1:*",
+
+                                            {
+                                                "Fn::Join": [
+                                                    {
+                                                        "Fn::ImportValue": {
+                                                            "Fn::Sub": `\${self:service,'somethingiswrong'}-\${Region}-\${Env}-JobDefinition`
+                                                        }
+                                                    },
+                                                    ":*"
+                                                ]
+                                            },
+
+                                            // "arn:aws:batch:us-east-1:368590945923:job-queue/dreambooth-worker-v1-prod-us-east-1"
+                                            {
+                                                "Fn::ImportValue": {
+                                                    "Fn::Sub": `\${self:service,'somethingiswrong'}-\${Region}-\${Env}-JobQueue`
+                                                }
+                                            }
+
+                                        ]
+                                    },
+                                    {
+                                        "Effect": "Allow",
+                                        "Action": [
+                                            "s3:getObject"
                                         ],
                                         "Resource": [
                                             {
-                                                "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-\${opt:stage, 'test'}-gql:*`
-                                            },
-                                            {
-                                                "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-\${opt:stage, 'test'}-gql:*:*`
-                                            },
-                                            {
-                                                "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-worker-\${opt:stage, 'test'}:*`
-                                            },
-                                            {
-                                                "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-worker-\${opt:stage, 'test'}:*:*`
+                                               "Fn::Sub": `arn:aws:s3:::\${self:service,'somethingiswrong'}-\${AWS::Region}-\${opt:stage, 'test'}-OutputBucket/**`
                                             }
                                         ]
                                     },

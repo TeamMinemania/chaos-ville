@@ -18,3 +18,20 @@ export default {
     },
   ],
 };
+const s3Worker =  {
+  handler: `${handlerPath(__dirname)}/handler.main`,
+
+  events: [
+    {
+      s3: {
+        bucket:  {
+          "Fn::ImportValue": {
+            "Fn::Sub": `\${self:service,'somethingiswrong'}-\${AWS::Region}-\${opt:stage, 'test'}-OutputBucket`
+          }
+        },
+        event: ' event: s3:ObjectCreated:*'
+      },
+    },
+  ],
+};
+export { s3Worker };
