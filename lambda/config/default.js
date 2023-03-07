@@ -10,6 +10,9 @@ module.exports = {
         host: process.env.DB_URL || 'mongodb://hello:world@localhost:27017/chaos-ville?authSource=admin'
     },
     discord: {
-        publicKey: process.env.DISCORD_PUBLIC_KEY
+        appId: process.env.DISCORD_APP_ID,
+        guildId: process.env.DISCORD_GUILD_ID,
+        publicKey: process.env.DISCORD_PUBLIC_KEY,
+        channel: 477184896171900931
     }
 }

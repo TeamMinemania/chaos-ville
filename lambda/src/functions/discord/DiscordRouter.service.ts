@@ -5,8 +5,11 @@ import {Inject, Service} from "typedi";
 import { InteractionType, InteractionResponseType, verifyKey  } from 'discord-interactions';
 import config  from 'config';
 import AWS from 'aws-sdk';
+import { S3Event } from 'aws-lambda';
+
 @Service("DiscordRouterService")
 export class DiscordRouterService {
+
     @Inject("DiscordService")
     private discordService: DiscordService;
     batch: AWS.Batch = new AWS.Batch({
@@ -47,25 +50,75 @@ export class DiscordRouterService {
 
 
     }
+    /*
+        {
+          app_permissions: '1071631420481',
+          application_id: '569134998444179466',
+          channel_id: '477184896171900931',
+          data: {
+            guild_id: '477184896171900928',
+            id: '1082347307313410059',
+            name: 'dreambooth',
+            options: [ [Object] ],
+            type: 1
+          },
+          entitlement_sku_ids: [],
+          guild_id: '477184896171900928',
+          guild_locale: 'en-US',
+          id: '1082391697771737239',
+          locale: 'en-US',
+          member: {
+            avatar: null,
+            communication_disabled_until: null,
+            deaf: false,
+            flags: 0,
+            is_pending: false,
+            joined_at: '2018-08-09T18:42:24.916000+00:00',
+            mute: false,
+            nick: null,
+            pending: false,
+            permissions: '4398046511103',
+            premium_since: null,
+            roles: [ '503591195507687424' ],
+            user: {
+              avatar: 'bd2c08c39cf0da58eb7301d82dcd9220',
+              avatar_decoration: null,
+              discriminator: '5448',
+              display_name: null,
+              id: '477184840182136854',
+              public_flags: 0,
+              username: 'schematical'
+            }
+          },
+          token: 'aW50ZXJhY3Rpb246MTA4MjM5MTY5Nzc3MTczNzIzOTpBdEhuYnVGU0l0Vkhsb21xT1pHOFlyQ1FWTUdnWG1wMHJsRnpQYmZOYlk0bUVWU0VuSW5NbWJLbnVMRDF6MHFYNDd2Q3U1Y0NHeG9wd2FNSmROTlJ4RDBwM3hXYnBSblhJNVdjdUcxQVNtcUd5MEdHUmdycTIwSUJDZ3dxRXcyTg',
+          type: 2,
+          version: 1
+        }
+     */
     async interactions (req, res){
         try {
             const {type, id, data, member} = req.body;
             if (type === InteractionType.PING) {
                 return res.json({type: InteractionResponseType.PONG});
             }
-            console.log("req.body:", req.body);
+            console.log("req.body:", JSON.stringify(req.body, null, 3));
             if (type === InteractionType.APPLICATION_COMMAND) {
                 // Slash command with name of "test"
                 if (data.name === 'dreambooth') {
-                    const prompt = "An empty desert with skulls, buzzards and cactusses";
+                    const promptOption = data.options.find((option) => option.name === 'prompt');
+                    if (!promptOption) {
+                        throw new Error("Missing `prompt` option");
+                    }
+                    const jobName = member.user.username + '-' + id;
+                    const prompt = promptOption.value; // "An empty desert with skulls, buzzards and cactusses";
                     const params = {
                         jobDefinition: config.get('aws.batch.jobDefinition'),
-                        jobName: member.user.username + '-' + id,
+                        jobName: jobName,
                         jobQueue: config.get('aws.batch.jobQueue'),
                         containerOverrides: {
                             command: [
                                 "conda", "run", "--no-capture-output", "-n", "ldm", "/bin/bash", "-c",
-                                `/home/ubuntu/run.sh test "${prompt}, 16bitscene"`
+                                `/home/ubuntu/run.sh ${jobName} "${prompt}, 16bitscene"`
                             ]
                         }
                     };
@@ -93,5 +146,41 @@ export class DiscordRouterService {
     test (req, res){
         res.json({hello:"WOrld"});
     }
+    async handleS3Event(event: S3Event) {
+        const filteredRecords = event.Records.filter((record) => {
+            return true;
+        });
+        for(let record of filteredRecords) {
+            const key = record.s3.object.key;
+            const parts = key.split('/');
+            const parts2 = parts[0].split('-');
+            const username = parts2[0];
+            const messageId = parts2[1];
 
+            /*const client = new S3Client({});
+            const command = new GetObjectCommand({
+                Bucket: record.s3.bucket.name,
+                Key: key
+            });
+            // https://stackoverflow.com/questions/62613331/how-to-get-signed-s3-url-in-aws-sdk-js-version-3
+            const url = await getSignedUrl(client, command, { expiresIn: 3600 });*/
+            const url = 'https://assets.schematical.com/images/background_diagram.jpg';
+                this.discordService.sendMessage({
+               content: `<@${username}> your job has finished`,
+               attachments: [
+                   {
+                       id: key,
+                       filename: key,
+                       url,
+                       size: record.s3.object.size
+                   }
+               ],
+                allowed_mentions: {
+                   parse:["users"]
+                   //  users: [username]
+                }
+            });
+        }
+
+    }
 }

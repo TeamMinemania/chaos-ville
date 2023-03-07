@@ -159,19 +159,22 @@ const serverlessConfiguration: AWS = {
 
                                             {
                                                 "Fn::Join": [
-                                                    {
-                                                        "Fn::ImportValue": {
-                                                            "Fn::Sub": `\${self:service,'somethingiswrong'}-\${Region}-\${Env}-JobDefinition`
-                                                        }
-                                                    },
-                                                    ":*"
+                                                    "",
+                                                    [
+                                                        {
+                                                            "Fn::ImportValue": {
+                                                                "Fn::Sub": `dreambooth-worker-v1-\${AWS::Region}-\${opt:stage, 'test'}-JobDefinition`
+                                                            }
+                                                        },
+                                                        ":*"
+                                                    ]
                                                 ]
                                             },
 
                                             // "arn:aws:batch:us-east-1:368590945923:job-queue/dreambooth-worker-v1-prod-us-east-1"
                                             {
                                                 "Fn::ImportValue": {
-                                                    "Fn::Sub": `\${self:service,'somethingiswrong'}-\${Region}-\${Env}-JobQueue`
+                                                    "Fn::Sub": `dreambooth-worker-v1-\${AWS::Region}-\${opt:stage, 'test'}-JobQueue`
                                                 }
                                             }
 
@@ -184,7 +187,7 @@ const serverlessConfiguration: AWS = {
                                         ],
                                         "Resource": [
                                             {
-                                               "Fn::Sub": `arn:aws:s3:::\${self:service,'somethingiswrong'}-\${AWS::Region}-\${opt:stage, 'test'}-OutputBucket/**`
+                                               "Fn::Sub": `arn:aws:s3:::dreambooth-worker-v1-\${AWS::Region}-\${opt:stage, 'test'}-OutputBucket/**`
                                             }
                                         ]
                                     },

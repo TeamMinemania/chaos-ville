@@ -1,5 +1,6 @@
 import {Service} from "typedi";
 import axios from 'axios';
+import config  from 'config';
 interface iDiscordReqOptions{
     uri: string,
     method?: 'post',
@@ -19,23 +20,40 @@ interface iRegisterCommandOptionsOptions{
     required?:boolean;
     type: number
 }
+// https://discord.com/developers/docs/resources/channel#create-message
+interface iSendMessageOptions{
+    content?:string;
+    attachments?: iSendMessageAttachment[],
+    allowed_mentions?: iSendMessageAllowedMention
+}
+// https://discord.com/developers/docs/resources/channel#attachment-object
+interface iSendMessageAttachment{
+    id: string;
+    url: string;
+    filename: string;
+    size: number;
+}
+interface iSendMessageAllowedMention{
+    parse: string[],
+    users?: string[]
+}
 @Service("DiscordService")
 export class DiscordService {
     registerCommand(options: iRegisterCommandOptions) {
             return this.req({
-                uri: `/applications/${process.env.DISCORD_APP_ID}/guilds/${process.env.GUILD_ID}/commands`,
+                uri: `/applications/${config.get('discord.appId')}/guilds/${config.get('discord.guildId')}/commands`,
                 data: {
                     ...options
                 }
-            })
-            /*.then(function (response) {
-                // handle success
-                console.log(response);
-            })
-            .catch(function (error) {
-                // handle error
-                console.log(error);
-            })*/
+            });
+    }
+    sendMessage(options: iSendMessageOptions) {
+            return this.req({
+                uri: `/channels/${config.get('discord.channel')}/messages`,
+                data: {
+                    ...options
+                }
+            });
     }
     req(options: iDiscordReqOptions) {
        const url = `https://discord.com/api/v10${options.uri}`;
