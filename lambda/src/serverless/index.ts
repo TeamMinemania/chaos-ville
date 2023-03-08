@@ -1,8 +1,9 @@
 import {LambdaSecurityGroup} from "./resources/LambdaSecurityGroup";
 const region = `us-east-1`;
 import { AWS } from '@serverless/typescript';
-import discord from '@functions/discord';
+import discord, {s3Worker} from '@functions/discord';
 import gql from '@functions/gql';
+import * as process from "process";
 const ApiGatewayMethodPropertyName = 'ApiGatewayMethodChaosvilleAny';
 const serverlessConfiguration: AWS = {
     service: 'chaos-ville-v1',
@@ -38,7 +39,11 @@ const serverlessConfiguration: AWS = {
         environment: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
             NODE_ENV: "${opt:stage, 'test'}",
-            DB_URL: process.env.DB_URL
+            DB_URL: process.env.DB_URL,
+            DISCORD_APP_ID:  process.env.DISCORD_APP_ID,
+            DISCORD_PUBLIC_KEY: process.env.DISCORD_PUBLIC_KEY,
+            DISCORD_TOKEN: process.env.DISCORD_TOKEN,
+            OPENAI_API_KEY: process.env.OPENAI_API_KEY
         },
     },
     resources: {
@@ -46,12 +51,11 @@ const serverlessConfiguration: AWS = {
             LambdaSecurityGroup,
         },
         extensions: {
-            // @ts-ignore
             GqlLambdaFunction: {
                 Properties: {
-                    TracingConfig: {
+                    /*TracingConfig: {
                         Mode : "Active"
-                    },
+                    },*/
                     VpcConfig: {
                         SecurityGroupIds: [
                             {
@@ -80,9 +84,9 @@ const serverlessConfiguration: AWS = {
             },
             DiscordLambdaFunction: {
                 Properties: {
-                    TracingConfig: {
+                   /* TracingConfig: {
                         Mode : "Active"
-                    },
+                    },*/
                     VpcConfig: {
                         SecurityGroupIds: [
                             {
@@ -109,7 +113,37 @@ const serverlessConfiguration: AWS = {
                     },
                 },
             },
-            // @ts-ignore
+            S3WorkerLambdaFunction: {
+                Properties: {
+                    /*TracingConfig: {
+                        Mode : "Active"
+                    },*/
+                    VpcConfig: {
+                        SecurityGroupIds: [
+                            {
+                                Ref: 'LambdaSecurityGroup',
+                            },
+                        ],
+                        SubnetIds: [
+                            {
+                                "Fn::ImportValue": {
+                                    "Fn::Sub": `\${AWS::Region}-\${opt:stage, 'test'}-PrivateSubnetA`
+                                }
+                            },
+                            {
+                                "Fn::ImportValue": {
+                                    "Fn::Sub": `\${AWS::Region}-\${opt:stage, 'test'}-PrivateSubnetB`
+                                }
+                            },
+                            {
+                                "Fn::ImportValue": {
+                                    "Fn::Sub": `\${AWS::Region}-\${opt:stage, 'test'}-PrivateSubnetC`
+                                }
+                            }
+                        ]
+                    },
+                },
+            },
             IamRoleLambdaExecution: {
                 Properties: {
                     Policies: [
@@ -157,7 +191,16 @@ const serverlessConfiguration: AWS = {
                                         "Resource": [
                                             // "arn:aws:batch:us-east-1:368590945923:job-definition/dreambooth-worker-v1-prod-us-east-1:*",
 
+
                                             {
+                                                "Fn::Sub": "arn:aws:batch:\${AWS::Region}:\${AWS::AccountId}:job-definition/dreambooth-worker-v1-\${opt:stage, 'test'}-\${AWS::Region}:*"
+                                            },
+                                            {
+                                                "Fn::ImportValue": {
+                                                    "Fn::Sub": `dreambooth-worker-v1-\${AWS::Region}-\${opt:stage, 'test'}-JobQueue`
+                                                }
+                                            }
+                                            /*{
                                                 "Fn::Join": [
                                                     "",
                                                     [
@@ -169,14 +212,10 @@ const serverlessConfiguration: AWS = {
                                                         ":*"
                                                     ]
                                                 ]
-                                            },
+                                            },*/
 
                                             // "arn:aws:batch:us-east-1:368590945923:job-queue/dreambooth-worker-v1-prod-us-east-1"
-                                            {
-                                                "Fn::ImportValue": {
-                                                    "Fn::Sub": `dreambooth-worker-v1-\${AWS::Region}-\${opt:stage, 'test'}-JobQueue`
-                                                }
-                                            }
+
 
                                         ]
                                     },
@@ -187,7 +226,7 @@ const serverlessConfiguration: AWS = {
                                         ],
                                         "Resource": [
                                             {
-                                               "Fn::Sub": `arn:aws:s3:::dreambooth-worker-v1-\${AWS::Region}-\${opt:stage, 'test'}-OutputBucket/**`
+                                               "Fn::Sub": `arn:aws:s3:::dreambooth-worker-v1-\${opt:stage, 'test'}-\${AWS::Region}/**`
                                             }
                                         ]
                                     },
@@ -295,6 +334,7 @@ const serverlessConfiguration: AWS = {
     functions: {
         gql,
         discord,
+        s3Worker
         /*kinesisWorker: {
             name: `\${self:service,'somethingiswrong'}-worker-v1-\${opt:stage, 'test'}`,
             handler: 'src/kinesisWorker.kinesisHandler',

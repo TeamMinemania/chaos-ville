@@ -5,6 +5,7 @@ interface iDiscordReqOptions{
     uri: string,
     method?: 'post',
     data?: any;
+    formData?:FormData;
 }
 // https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types
 interface iRegisterCommandOptions{
@@ -28,10 +29,14 @@ interface iSendMessageOptions{
 }
 // https://discord.com/developers/docs/resources/channel#attachment-object
 interface iSendMessageAttachment{
-    id: string;
-    url: string;
-    filename: string;
-    size: number;
+    id?: string;
+    url?: string;
+    filename?: string;
+    size?: number;
+    content_type?: string;
+    description?: string;
+    height?: number;
+    width?: number;
 }
 interface iSendMessageAllowedMention{
     parse: string[],
@@ -47,12 +52,14 @@ export class DiscordService {
                 }
             });
     }
-    sendMessage(options: iSendMessageOptions) {
+    sendMessage(options: iSendMessageOptions, formData: FormData) {
+            formData.append('payload_json', JSON.stringify(options));
             return this.req({
                 uri: `/channels/${config.get('discord.channel')}/messages`,
-                data: {
+                data:    formData /*{
                     ...options
-                }
+                },*/
+
             });
     }
     req(options: iDiscordReqOptions) {
@@ -63,7 +70,8 @@ export class DiscordService {
             data: options.data,
             headers: {
                 Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
-                'Content-Type': 'application/json; charset=UTF-8',
+                // 'Content-Type': 'application/json; charset=UTF-8',
+                'Content-Type': 'multipart/form-data',
                 'User-Agent': 'DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)',
             },
         })

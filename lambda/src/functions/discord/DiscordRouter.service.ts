@@ -6,12 +6,16 @@ import { InteractionType, InteractionResponseType, verifyKey  } from 'discord-in
 import config  from 'config';
 import AWS from 'aws-sdk';
 import { S3Event } from 'aws-lambda';
-
+import { Snowflake } from 'nodejs-snowflake';
+const FormData = require('form-data');
 @Service("DiscordRouterService")
 export class DiscordRouterService {
 
     @Inject("DiscordService")
-    private discordService: DiscordService;
+    public discordService: DiscordService;
+    s3: AWS.S3 = new AWS.S3({
+        region: config.get('aws.region')
+    });
     batch: AWS.Batch = new AWS.Batch({
         region: config.get('aws.region')
     });
@@ -109,16 +113,16 @@ export class DiscordRouterService {
                     if (!promptOption) {
                         throw new Error("Missing `prompt` option");
                     }
-                    const jobName = member.user.username + '-' + id;
+                    const s3Path = member.user.username + '-' + member.user.id + '/' + id;
                     const prompt = promptOption.value; // "An empty desert with skulls, buzzards and cactusses";
                     const params = {
                         jobDefinition: config.get('aws.batch.jobDefinition'),
-                        jobName: jobName,
+                        jobName: member.user.username + '-' + member.user.id + '-' + id,
                         jobQueue: config.get('aws.batch.jobQueue'),
                         containerOverrides: {
                             command: [
                                 "conda", "run", "--no-capture-output", "-n", "ldm", "/bin/bash", "-c",
-                                `/home/ubuntu/run.sh ${jobName} "${prompt}, 16bitscene"`
+                                `/home/ubuntu/run.sh ${s3Path} "${prompt}, 16bitscene"`
                             ]
                         }
                     };
@@ -137,6 +141,7 @@ export class DiscordRouterService {
                 data: {content: 'No idea what your talking about'},
             });
         }catch(err){
+            console.error("CAUGHT ERR: ", err);
             return res.send({
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data: {content: 'Error: ' + err.message },
@@ -147,39 +152,64 @@ export class DiscordRouterService {
         res.json({hello:"WOrld"});
     }
     async handleS3Event(event: S3Event) {
+        console.log("S3Event: ", JSON.stringify(event, null, 3));
         const filteredRecords = event.Records.filter((record) => {
-            return true;
+            return record.s3.object.key.substr(record.s3.object.key.length - 4) ===  '.jpg';
         });
+        console.log("filteredRecords: ", filteredRecords);
         for(let record of filteredRecords) {
             const key = record.s3.object.key;
             const parts = key.split('/');
             const parts2 = parts[0].split('-');
+            const messageId = parts[1];
             const username = parts2[0];
-            const messageId = parts2[1];
+            const userId = parts2[1]
 
-            /*const client = new S3Client({});
-            const command = new GetObjectCommand({
+
+            // const url = 'https://sc-cloud-formation-v1.s3.amazonaws.com/a-radio-active-factory%2C-16bitscene-0000.jpg';
+            const params = {
                 Bucket: record.s3.bucket.name,
-                Key: key
-            });
-            // https://stackoverflow.com/questions/62613331/how-to-get-signed-s3-url-in-aws-sdk-js-version-3
-            const url = await getSignedUrl(client, command, { expiresIn: 3600 });*/
-            const url = 'https://assets.schematical.com/images/background_diagram.jpg';
-                this.discordService.sendMessage({
-               content: `<@${username}> your job has finished`,
-               attachments: [
-                   {
-                       id: key,
-                       filename: key,
-                       url,
-                       size: record.s3.object.size
-                   }
-               ],
-                allowed_mentions: {
-                   parse:["users"]
-                   //  users: [username]
-                }
-            });
+                Key: record.s3.object.key
+            };
+            // const url = await this.s3.getSignedUrlPromise('getObject', params);
+            // console.log("URL: ", url);
+            const uid = new Snowflake();
+
+
+
+            try {
+console.log("params", params);
+                const s3Response = await this.s3.getObject(params).promise();
+                const formData = new FormData();
+                // const blob = new Blob([s3Response.Body.toBy()], { type: "image/jpg" });
+                formData.append('files[0]', s3Response.Body, 'image.jpg'); // blob, 'image.jpg')
+                const response = await this.discordService.sendMessage(
+                    {
+                        content: `<@${userId}> your job has finished`,
+                    /*    attachments: [
+                            {
+                                id: uid.getUniqueID().toString(),
+                                filename: 'image.jpg',
+                                /!*description: key,
+                                height:2058,
+                                width: 516,
+                                // url,
+                                size: record.s3.object.size,
+                                content_type: 'image/jpg'*!/
+                            }
+                        ],*/
+                        allowed_mentions: {
+                            parse: ["users"]
+                            //  users: [username]
+                        }
+                    },
+                    formData
+                );
+                console.log("this.discordService.sendMessage:", response);
+            }catch(e) {
+                console.log("e.response?.config: ", e.response?.config?.data);
+                console.error("ERROR: ", e.response &&  JSON.stringify(e.response.data.errors, null, 3)  || e);
+            }
         }
 
     }
