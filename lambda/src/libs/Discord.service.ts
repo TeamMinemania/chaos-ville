@@ -52,10 +52,10 @@ export class DiscordService {
                 }
             });
     }
-    sendMessage(options: iSendMessageOptions, formData: FormData) {
+    sendMessage(options: iSendMessageOptions, formData: FormData, channel?: string) {
             formData.append('payload_json', JSON.stringify(options));
             return this.req({
-                uri: `/channels/${config.get('discord.channel')}/messages`,
+                uri: `/channels/${channel || config.get('discord.channel')}/messages`,
                 data:    formData /*{
                     ...options
                 },*/

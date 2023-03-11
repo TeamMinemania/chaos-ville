@@ -176,8 +176,17 @@ const serverlessConfiguration: AWS = {
                                         ],
                                         "Resource": [
                                             {
+                                                "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-\${opt:stage, 'test'}-*`
+                                            },
+                                            {
                                                 "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-\${opt:stage, 'test'}-*:*`
                                             },
+                                           /* {
+                                                "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-\${opt:stage, 'test'}-custom-resource-existing-s3`
+                                            },
+                                            {
+                                                "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-\${opt:stage, 'test'}-custom-resource-existing-s3:*`
+                                            },*/
                                             {
                                                 "Fn::Sub": `arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${self:service,'somethingiswrong'}-worker-\${opt:stage, 'test'}-*:*`
                                             }

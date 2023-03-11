@@ -101,7 +101,7 @@ export class DiscordRouterService {
      */
     async interactions (req, res){
         try {
-            const {type, id, data, member} = req.body;
+            const {type, id, data, member, channel_id} = req.body;
             if (type === InteractionType.PING) {
                 return res.json({type: InteractionResponseType.PONG});
             }
@@ -113,16 +113,23 @@ export class DiscordRouterService {
                     if (!promptOption) {
                         throw new Error("Missing `prompt` option");
                     }
-                    const s3Path = member.user.username + '-' + member.user.id + '/' + id;
-                    const prompt = promptOption.value; // "An empty desert with skulls, buzzards and cactusses";
-                    const params = {
+                    const s3Path = member.user.username + '-' + member.user.id + '/' + channel_id + '-' + id;
+                    const prompt = promptOption.value.replace(/[^\w\s]/gi, ''); // "An empty desert with skulls, buzzards and cactusses";
+                    const seed = Math.round(Math.random() * 999);
+                    const params: AWS.Batch.Types.SubmitJobRequest = {
                         jobDefinition: config.get('aws.batch.jobDefinition'),
                         jobName: member.user.username + '-' + member.user.id + '-' + id,
                         jobQueue: config.get('aws.batch.jobQueue'),
                         containerOverrides: {
                             command: [
-                                "conda", "run", "--no-capture-output", "-n", "ldm", "/bin/bash", "-c",
-                                `/home/ubuntu/run.sh ${s3Path} "${prompt}, 16bitscene"`
+                                "node",
+                                "/home/ubuntu/node/run.js",
+                                s3Path,
+                                `'${prompt}'`,
+                                seed.toString()
+
+                                // "conda", "run", "--no-capture-output", "-n", "ldm", "/bin/bash", "-c",
+                                // `/home/ubuntu/run.sh ${s3Path} "${prompt}" ${seed}` // , 16bitscene"`
                             ]
                         }
                     };
@@ -131,7 +138,7 @@ export class DiscordRouterService {
                     // Send a message as response
                     return res.send({
                         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                        data: {content: 'Job Submitted: ' + response.jobId + '   ' + response.jobName},
+                        data: {content: `${member.user.username} submitted "${prompt}" - JobId: ` + response.jobId + '   ' + response.jobName},
                     });
                 }
             }
@@ -153,17 +160,21 @@ export class DiscordRouterService {
     }
     async handleS3Event(event: S3Event) {
         console.log("S3Event: ", JSON.stringify(event, null, 3));
+        const messageMap = {};
         const filteredRecords = event.Records.filter((record) => {
             return record.s3.object.key.substr(record.s3.object.key.length - 4) ===  '.jpg';
         });
         console.log("filteredRecords: ", filteredRecords);
+
         for(let record of filteredRecords) {
             const key = record.s3.object.key;
             const parts = key.split('/');
             const parts2 = parts[0].split('-');
-            const messageId = parts[1];
+            const parts3 = parts[1].split('-');
             const username = parts2[0];
             const userId = parts2[1]
+            const channel = parts3[0];
+            const messageId = parts3[1];
 
 
             // const url = 'https://sc-cloud-formation-v1.s3.amazonaws.com/a-radio-active-factory%2C-16bitscene-0000.jpg';
@@ -171,46 +182,52 @@ export class DiscordRouterService {
                 Bucket: record.s3.bucket.name,
                 Key: record.s3.object.key
             };
-            // const url = await this.s3.getSignedUrlPromise('getObject', params);
-            // console.log("URL: ", url);
-            const uid = new Snowflake();
 
 
-
-            try {
-console.log("params", params);
-                const s3Response = await this.s3.getObject(params).promise();
-                const formData = new FormData();
-                // const blob = new Blob([s3Response.Body.toBy()], { type: "image/jpg" });
-                formData.append('files[0]', s3Response.Body, 'image.jpg'); // blob, 'image.jpg')
-                const response = await this.discordService.sendMessage(
-                    {
-                        content: `<@${userId}> your job has finished`,
-                    /*    attachments: [
-                            {
-                                id: uid.getUniqueID().toString(),
-                                filename: 'image.jpg',
-                                /!*description: key,
-                                height:2058,
-                                width: 516,
-                                // url,
-                                size: record.s3.object.size,
-                                content_type: 'image/jpg'*!/
-                            }
-                        ],*/
-                        allowed_mentions: {
-                            parse: ["users"]
-                            //  users: [username]
-                        }
-                    },
-                    formData
-                );
-                console.log("this.discordService.sendMessage:", response);
-            }catch(e) {
-                console.log("e.response?.config: ", e.response?.config?.data);
-                console.error("ERROR: ", e.response &&  JSON.stringify(e.response.data.errors, null, 3)  || e);
+            if(!messageMap[messageId]){
+                messageMap[messageId] = {
+                    formData: new FormData(),
+                    userId: userId,
+                    channel
+                }
             }
-        }
 
+            console.log("params", params);
+            const s3Response = await this.s3.getObject(params).promise();
+
+            messageMap[messageId].formData.append('files[0]', s3Response.Body, parts[1]); // 'image.jpg');
+        }
+console.log("messageMap", Object.keys(messageMap));
+        try {
+           for (let messageId in messageMap) {
+               const response = await this.discordService.sendMessage(
+                   {
+                       content: `<@${messageMap[messageId].userId}> your job has finished`,
+                       /*    attachments: [
+                               {
+                                   id: uid.getUniqueID().toString(),
+                                   filename: 'image.jpg',
+                                   /!*description: key,
+                                   height:2058,
+                                   width: 516,
+                                   // url,
+                                   size: record.s3.object.size,
+                                   content_type: 'image/jpg'*!/
+                               }
+                           ],*/
+                       allowed_mentions: {
+                           parse: ["users"]
+                           //  users: [username]
+                       }
+                   },
+                   messageMap[messageId].formData,
+                   messageMap[messageId].channel
+               );
+               console.log("this.discordService.sendMessage:", messageMap, response);
+           }
+        }catch(e) {
+            console.log("e.response?.config: ", e.response?.config?.data);
+            console.error("ERROR: ", e.response &&  JSON.stringify(e.response.data.errors, null, 3)  || e);
+        }
     }
 }
